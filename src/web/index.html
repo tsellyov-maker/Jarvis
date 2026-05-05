@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Jarvis Local</title>
+    <link rel="stylesheet" href="/style.css">
+  </head>
+  <body>
+    <main class="shell">
+      <section class="topbar">
+        <div>
+          <h1>Jarvis Local</h1>
+          <p class="subtitle">Assistente pessoal sempre ativo</p>
+        </div>
+        <div class="status-pill" id="status-pill">
+          <span class="dot"></span>
+          <span id="status-text">conectando</span>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="metric">
+          <span class="label">Wake word</span>
+          <strong id="wake-word">jarvis</strong>
+        </div>
+        <div class="metric">
+          <span class="label">Microfone</span>
+          <strong id="microphone">verificando</strong>
+        </div>
+        <div class="metric">
+          <span class="label">Scheduler</span>
+          <strong id="scheduler">verificando</strong>
+        </div>
+        <div class="metric">
+          <span class="label">Banco</span>
+          <strong id="database">verificando</strong>
+        </div>
+        <div class="metric">
+          <span class="label">IA local</span>
+          <strong id="ai">verificando</strong>
+        </div>
+        <div class="metric">
+          <span class="label">Requests</span>
+          <strong id="requests">0</strong>
+        </div>
+        <div class="metric">
+          <span class="label">Offline</span>
+          <strong id="offline-mode">verificando</strong>
+        </div>
+      </section>
+
+      <section class="activity">
+        <div class="activity-row">
+          <span>Último comando</span>
+          <p id="last-command">Ainda não recebi comandos.</p>
+        </div>
+        <div class="activity-row">
+          <span>Última resposta</span>
+          <p id="last-response">Aguardando atividade.</p>
+        </div>
+      </section>
+
+      <section class="composer">
+        <label for="command-input">Enviar comando manual</label>
+        <div class="command-bar">
+          <input id="command-input" type="text" autocomplete="off" placeholder="Ex.: que horas são">
+          <button id="send-button" type="button">Enviar</button>
+          <button id="speak-button" type="button">Falar</button>
+        </div>
+      </section>
+
+      <section class="events">
+        <div class="section-title">
+          <span>Eventos recentes</span>
+          <button id="refresh-events" type="button">Atualizar</button>
+        </div>
+        <ol id="events-list"></ol>
+      </section>
+    </main>
+
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,27 @@
+[Unit]
+Description=Jarvis Local Assistant
+Documentation=file:/home/tsellyov/Documentos/Jarvis/README.md
+After=network-online.target sound.target
+Wants=network-online.target
+StartLimitIntervalSec=60
+StartLimitBurst=10
+
+[Service]
+Type=simple
+User=tsellyov
+Group=tsellyov
+WorkingDirectory=/home/tsellyov/Documentos/Jarvis
+Environment=NODE_ENV=production
+EnvironmentFile=-/home/tsellyov/Documentos/Jarvis/.env
+ExecStart=/usr/bin/npm run start
+Restart=always
+RestartSec=5
+KillSignal=SIGTERM
+TimeoutStopSec=45
+
+# Hardening leve: mantem acesso ao projeto, rede, audio e processos locais.
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

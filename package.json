@@ -1,0 +1,22 @@
+{
+  "name": "local-jarvis-assistant",
+  "version": "1.0.0",
+  "description": "Assistente pessoal local estilo Jarvis com voz, IA local, automacao, SQLite e interface web.",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node src/server.mjs"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.9.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^8.4.1",
+    "helmet": "^8.1.0",
+    "luxon": "^3.5.0",
+    "ws": "^8.18.0"
+  }
+}
