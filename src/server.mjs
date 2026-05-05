@@ -47,7 +47,7 @@ dotenv.config({ path: '.env.', override: false });
 const srcDir = dirname(fileURLToPath(import.meta.url));
 const zone = process.env.TIMEZONE || 'America/Sao_Paulo';
 const port = Number(process.env.PORT || 3000);
-const host = process.env.BIND_HOST || process.env.HOST || '127.0.0.1';
+const host = process.env.BIND_HOST || process.env.HOST || '0.0.0.0';
 
 const status = {
   online: false,
@@ -144,8 +144,6 @@ async function listenWithPortFallback(server, desiredPort, bindHost) {
 
         server.once('listening', onListening);
         server.once('error', onError);
-        const bindHost = '0.0.0.0';
-        console.log('HOST usado:', bindHost);
         server.listen(candidatePort, bindHost);
       });
 
