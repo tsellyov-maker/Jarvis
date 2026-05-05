@@ -47,7 +47,7 @@ dotenv.config({ path: '.env.', override: false });
 const srcDir = dirname(fileURLToPath(import.meta.url));
 const zone = process.env.TIMEZONE || 'America/Sao_Paulo';
 const port = Number(process.env.PORT || 3000);
-const host = process.env.BIND_HOST || process.env.HOST || '0.0.0.0';
+const host = '0.0.0.0';
 
 const status = {
   online: false,
