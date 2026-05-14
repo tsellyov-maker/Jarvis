@@ -1,2 +1,15 @@
 node_modules/
-node_modules/
+
+.env
+.env.*
+!.env.example
+
+src/audio/input/*
+src/audio/output/*
+!src/audio/input/.gitkeep
+!src/audio/output/.gitkeep
+
+src/data/*.sqlite
+src/data/*.sqlite-*
+*.log
+.DS_Store
