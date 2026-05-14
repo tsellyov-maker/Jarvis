@@ -13,3 +13,6 @@ src/data/*.sqlite
 src/data/*.sqlite-*
 *.log
 .DS_Store
+
+src/data/*
+!src/data/.gitkeep

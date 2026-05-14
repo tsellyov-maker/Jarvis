@@ -49,6 +49,15 @@ const zone = process.env.TIMEZONE || 'America/Sao_Paulo';
 const port = Number(process.env.PORT || 3000);
 const host = '0.0.0.0';
 
+function envEnabled(name) {
+  return ['true', '1', 'yes', 'on', 'enabled'].includes(
+    String(process.env[name] || '').trim().toLowerCase()
+  );
+}
+
+const voiceListenerEnabled = envEnabled('VOICE_LISTENER_ENABLED');
+const wakeLoopEnabled = envEnabled('WAKE_LOOP_ENABLED');
+
 const status = {
   online: false,
   startedAt: DateTime.now().setZone(zone).toISO(),
@@ -353,10 +362,20 @@ async function main() {
   status.host = host;
   status.url = `http://${host === '0.0.0.0' ? 'localhost' : host}:${actualPort}`;
   logger.info('server', `Jarvis online em ${status.url}`);
-  logger.info('server', 'Fluxo principal pronto: microfone -> wake word -> STT -> pipeline -> TTS -> speaker.');
+  logger.info('server', 'Servidor pronto. Voz local depende de VOICE_LISTENER_ENABLED=true e WAKE_LOOP_ENABLED=true.');
   scheduler.start();
-  voiceListener.start();
-  wakeLoop.start();
+
+  if (voiceListenerEnabled || wakeLoopEnabled) {
+    voiceListener.start();
+  } else {
+    logger.info('server', 'Voice listener desativado por padrão.');
+  }
+
+  if (wakeLoopEnabled) {
+    wakeLoop.start();
+  } else {
+    logger.info('server', 'Wake loop desativado por padrão.');
+  }
 
   let shuttingDown = false;
   const shutdown = async (signal) => {
