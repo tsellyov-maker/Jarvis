@@ -344,7 +344,7 @@ input:focus {
   gap: 10px;
 }
 
-.btn-memory-open {
+.btn-topbar-icon {
   position: relative;
   width: 38px;
   height: 38px;
@@ -360,10 +360,10 @@ input:focus {
   flex-shrink: 0;
 }
 
-.btn-memory-open:hover { background: var(--surface-2); color: var(--text); }
-.btn-memory-open:active { transform: scale(0.92); }
+.btn-topbar-icon:hover  { background: var(--surface-2); color: var(--text); }
+.btn-topbar-icon:active { transform: scale(0.92); }
 
-.memory-badge {
+.topbar-badge {
   position: absolute;
   top: -5px;
   right: -5px;
@@ -378,6 +378,10 @@ input:focus {
   line-height: 18px;
   text-align: center;
   pointer-events: none;
+}
+
+#reminders-open-btn .topbar-badge {
+  background: #f59e0b;
 }
 
 /* ── DRAWER BACKDROP ─────────────────────────────────────── */
@@ -399,9 +403,9 @@ input:focus {
   pointer-events: all;
 }
 
-/* ── MEMORY DRAWER ───────────────────────────────────────── */
+/* ── SHARED DRAWER ───────────────────────────────────────── */
 
-.memory-drawer {
+.side-drawer {
   position: fixed;
   left: 0;
   right: 0;
@@ -421,7 +425,7 @@ input:focus {
   will-change: transform;
 }
 
-.memory-drawer.open {
+.side-drawer.open {
   transform: translateY(0);
 }
 
@@ -540,6 +544,20 @@ input:focus {
 
 /* ── MEMORY LIST ─────────────────────────────────────────── */
 
+.drawer-hint {
+  padding: 10px 20px 0;
+  font-size: 12px;
+  color: var(--text-3);
+  line-height: 1.5;
+  flex-shrink: 0;
+}
+
+.drawer-hint em {
+  color: var(--text-2);
+  font-style: normal;
+}
+
+.drawer-list-wrap,
 .memory-list-wrap {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
@@ -548,6 +566,7 @@ input:focus {
   padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
 }
 
+.drawer-loading,
 .memory-loading {
   display: flex;
   gap: 6px;
@@ -555,6 +574,7 @@ input:focus {
   padding: 28px 0;
 }
 
+.drawer-loading span,
 .memory-loading span {
   width: 8px;
   height: 8px;
@@ -563,10 +583,14 @@ input:focus {
   animation: bounce 1.2s ease-in-out infinite;
 }
 
+.drawer-loading span:nth-child(2),
 .memory-loading span:nth-child(2) { animation-delay: 0.2s; }
+.drawer-loading span:nth-child(3),
 .memory-loading span:nth-child(3) { animation-delay: 0.4s; }
+.drawer-loading[hidden],
 .memory-loading[hidden]           { display: none; }
 
+.drawer-empty,
 .memory-empty {
   text-align: center;
   color: var(--text-3);
@@ -626,6 +650,101 @@ input:focus {
   margin-top: 2px;
   white-space: nowrap;
 }
+
+/* ── REMINDER LIST ───────────────────────────────────────── */
+
+.rem-title svg { color: #f59e0b; }
+
+.reminder-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.reminder-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  animation: slide-in 0.22s ease;
+  transition: opacity 0.2s;
+}
+
+.reminder-item.done {
+  opacity: 0.45;
+}
+
+.reminder-item.overdue {
+  border-color: rgba(239, 68, 68, 0.35);
+  background: rgba(239, 68, 68, 0.06);
+}
+
+.reminder-status-icon {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+}
+
+.reminder-item.pending  .reminder-status-icon { background: rgba(245,158,11,0.15); color: #f59e0b; }
+.reminder-item.overdue  .reminder-status-icon { background: rgba(239,68,68,0.15);  color: #ef4444; }
+.reminder-item.done     .reminder-status-icon { background: rgba(34,197,94,0.12);  color: #22c55e; }
+
+.reminder-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.reminder-text {
+  display: block;
+  font-size: 14px;
+  color: var(--text);
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.reminder-item.done .reminder-text {
+  text-decoration: line-through;
+  color: var(--text-2);
+}
+
+.reminder-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 5px;
+  flex-wrap: wrap;
+}
+
+.reminder-due {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-3);
+}
+
+.reminder-item.overdue .reminder-due { color: #f87171; }
+.reminder-item.pending .reminder-due { color: #fbbf24; }
+
+.reminder-tag {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 5px;
+}
+
+.reminder-item.pending  .reminder-tag { background: rgba(245,158,11,0.15); color: #f59e0b; }
+.reminder-item.overdue  .reminder-tag { background: rgba(239,68,68,0.15);  color: #ef4444; }
+.reminder-item.done     .reminder-tag { background: rgba(34,197,94,0.12);  color: #22c55e; }
 
 /* ── DESKTOP BOOST ───────────────────────────────────────── */
 

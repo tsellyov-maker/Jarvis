@@ -5,17 +5,25 @@ const feedEmpty      = document.querySelector('#feed-empty');
 const commandInput   = document.querySelector('#command-input');
 const sendButton     = document.querySelector('#send-button');
 const voiceButton    = document.querySelector('#voice-button');
-const memoryOpenBtn  = document.querySelector('#memory-open-btn');
-const memoryCloseBtn = document.querySelector('#memory-close-btn');
-const memoryDrawer   = document.querySelector('#memory-drawer');
-const drawerBackdrop = document.querySelector('#drawer-backdrop');
-const memoryBadge    = document.querySelector('#memory-badge');
-const memoryLoading  = document.querySelector('#memory-loading');
-const memoryList     = document.querySelector('#memory-list');
-const memoryEmpty    = document.querySelector('#memory-empty');
-const memoryAddForm  = document.querySelector('#memory-add-form');
-const memoryAddInput = document.querySelector('#memory-add-input');
-const memoryKind     = document.querySelector('#memory-kind');
+const memoryOpenBtn     = document.querySelector('#memory-open-btn');
+const memoryCloseBtn    = document.querySelector('#memory-close-btn');
+const memoryDrawer      = document.querySelector('#memory-drawer');
+const drawerBackdrop    = document.querySelector('#drawer-backdrop');
+const memoryBadge       = document.querySelector('#memory-badge');
+const memoryLoading     = document.querySelector('#memory-loading');
+const memoryList        = document.querySelector('#memory-list');
+const memoryEmpty       = document.querySelector('#memory-empty');
+const memoryAddForm     = document.querySelector('#memory-add-form');
+const memoryAddInput    = document.querySelector('#memory-add-input');
+const memoryKind        = document.querySelector('#memory-kind');
+
+const remindersOpenBtn  = document.querySelector('#reminders-open-btn');
+const remindersCloseBtn = document.querySelector('#reminders-close-btn');
+const remindersDrawer   = document.querySelector('#reminders-drawer');
+const remindersBadge    = document.querySelector('#reminders-badge');
+const remindersLoading  = document.querySelector('#reminders-loading');
+const reminderList      = document.querySelector('#reminder-list');
+const remindersEmpty    = document.querySelector('#reminders-empty');
 
 let typingEl = null;
 let isSending = false;
@@ -153,22 +161,30 @@ async function sendCommand(simulatedVoice = false) {
   }
 }
 
-/* ── MEMORY DRAWER ──────────────────────────────────────── */
+/* ── DRAWER SHARED ──────────────────────────────────────── */
 
-function openDrawer() {
-  memoryDrawer.classList.add('open');
-  memoryDrawer.setAttribute('aria-hidden', 'false');
-  drawerBackdrop.classList.add('open');
-  document.body.style.overflow = 'hidden';
-  fetchMemory();
-}
-
-function closeDrawer() {
-  memoryDrawer.classList.remove('open');
-  memoryDrawer.setAttribute('aria-hidden', 'true');
+function closeAllDrawers() {
+  for (const drawer of [memoryDrawer, remindersDrawer]) {
+    drawer.classList.remove('open');
+    drawer.setAttribute('aria-hidden', 'true');
+  }
   drawerBackdrop.classList.remove('open');
   document.body.style.overflow = '';
 }
+
+function openDrawer(drawer, onOpen) {
+  closeAllDrawers();
+  drawer.classList.add('open');
+  drawer.setAttribute('aria-hidden', 'false');
+  drawerBackdrop.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  onOpen?.();
+}
+
+/* ── MEMORY DRAWER ──────────────────────────────────────── */
+
+function openMemoryDrawer()  { openDrawer(memoryDrawer, fetchMemory); }
+function closeMemoryDrawer() { closeAllDrawers(); }
 
 function updateBadge(count) {
   if (count > 0) {
@@ -265,9 +281,9 @@ async function addMemoryItem(text, kind) {
   }
 }
 
-memoryOpenBtn.addEventListener('click', openDrawer);
-memoryCloseBtn.addEventListener('click', closeDrawer);
-drawerBackdrop.addEventListener('click', closeDrawer);
+memoryOpenBtn.addEventListener('click', openMemoryDrawer);
+memoryCloseBtn.addEventListener('click', closeMemoryDrawer);
+drawerBackdrop.addEventListener('click', closeAllDrawers);
 
 memoryAddForm.addEventListener('submit', (ev) => {
   ev.preventDefault();
@@ -276,8 +292,122 @@ memoryAddForm.addEventListener('submit', (ev) => {
   addMemoryItem(text, memoryKind.value);
 });
 
+/* ── REMINDERS DRAWER ───────────────────────────────────── */
+
+function openRemindersDrawer()  { openDrawer(remindersDrawer, fetchReminders); }
+function closeRemindersDrawer() { closeAllDrawers(); }
+
+function reminderStatus(item) {
+  if (item.executed) return 'done';
+  if (!item.dueAt)   return 'pending';
+  return new Date(item.dueAt) < new Date() ? 'overdue' : 'pending';
+}
+
+function formatReminderDate(iso) {
+  if (!iso) return '';
+  try {
+    const d = new Date(iso);
+    const today    = new Date(); today.setHours(0,0,0,0);
+    const tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate() + 1);
+    const day = new Date(d); day.setHours(0,0,0,0);
+    const time = d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+    if (day.getTime() === today.getTime())    return `Hoje às ${time}`;
+    if (day.getTime() === tomorrow.getTime()) return `Amanhã às ${time}`;
+    return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' }) + ` às ${time}`;
+  } catch { return ''; }
+}
+
+const STATUS_ICONS = {
+  pending: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
+  overdue: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
+  done:    `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`
+};
+
+const STATUS_LABELS = { pending: 'Pendente', overdue: 'Atrasado', done: 'Concluído' };
+
+function renderReminders(items) {
+  reminderList.innerHTML = '';
+
+  const pending = items.filter(r => !r.executed);
+  const done    = items.filter(r =>  r.executed);
+  const sorted  = [...pending.sort((a, b) => new Date(a.dueAt) - new Date(b.dueAt)), ...done];
+
+  if (sorted.length === 0) {
+    remindersEmpty.hidden = false;
+    remindersBadge.hidden = true;
+    return;
+  }
+
+  remindersEmpty.hidden = true;
+  const pendingCount = pending.length;
+  if (pendingCount > 0) {
+    remindersBadge.textContent = pendingCount > 99 ? '99+' : String(pendingCount);
+    remindersBadge.hidden = false;
+  } else {
+    remindersBadge.hidden = true;
+  }
+
+  for (const item of sorted) {
+    const status = reminderStatus(item);
+    const li = document.createElement('li');
+    li.className = `reminder-item ${status}`;
+
+    const iconWrap = document.createElement('div');
+    iconWrap.className = 'reminder-status-icon';
+    iconWrap.innerHTML = STATUS_ICONS[status];
+
+    const body = document.createElement('div');
+    body.className = 'reminder-body';
+
+    const textEl = document.createElement('span');
+    textEl.className = 'reminder-text';
+    textEl.textContent = item.text || '';
+
+    const meta = document.createElement('div');
+    meta.className = 'reminder-meta';
+
+    if (item.dueAt) {
+      const due = document.createElement('span');
+      due.className = 'reminder-due';
+      due.textContent = formatReminderDate(item.dueAt);
+      meta.append(due);
+    }
+
+    const tag = document.createElement('span');
+    tag.className = 'reminder-tag';
+    tag.textContent = STATUS_LABELS[status];
+    meta.append(tag);
+
+    body.append(textEl, meta);
+    li.append(iconWrap, body);
+    reminderList.append(li);
+  }
+}
+
+async function fetchReminders() {
+  remindersLoading.hidden = false;
+  remindersEmpty.hidden   = true;
+  reminderList.innerHTML  = '';
+
+  try {
+    const res  = await jarvisFetch('/reminders');
+    const data = await res.json();
+    const items = Array.isArray(data) ? data : (data.reminders || []);
+    renderReminders(items);
+  } catch {
+    remindersEmpty.textContent = 'Erro ao carregar lembretes.';
+    remindersEmpty.hidden = false;
+  } finally {
+    remindersLoading.hidden = true;
+  }
+}
+
+remindersOpenBtn.addEventListener('click', openRemindersDrawer);
+remindersCloseBtn.addEventListener('click', closeRemindersDrawer);
+
 document.addEventListener('keydown', (ev) => {
-  if (ev.key === 'Escape' && memoryDrawer.classList.contains('open')) closeDrawer();
+  if (ev.key === 'Escape') closeAllDrawers();
 });
 
 /* ── VOICE BUTTON STATE ─────────────────────────────────── */
