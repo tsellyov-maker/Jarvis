@@ -1,0 +1,55 @@
+modules = ["nodejs-20", "web"]
+[agent]
+expertMode = true
+
+[nix]
+channel = "stable-25_05"
+
+[userenv]
+
+[userenv.shared]
+PORT = "5000"
+TIMEZONE = "America/Sao_Paulo"
+AI_PROVIDER = "ollama"
+OLLAMA_URL = "http://localhost:11434"
+OLLAMA_MODEL_COMMAND = "llama3.2:3b"
+OLLAMA_MODEL_CHAT = "llama3.2:3b"
+OLLAMA_MODEL_FALLBACK = "llama3.2:3b"
+TTS_PROVIDER = "fish_audio"
+FISH_AUDIO_TIMEOUT_MS = "12000"
+HA_LIGHT_ENTITY = "light.luz_quarto"
+MIC_RECORDING_ENABLED = "false"
+VOICE_LISTENER_ENABLED = "false"
+WAKE_LOOP_ENABLED = "false"
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Start application"
+
+[[workflows.workflow]]
+name = "Start application"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm start"
+waitForPort = 5000
+
+[workflows.workflow.metadata]
+outputType = "webview"
+
+[[ports]]
+localPort = 5000
+externalPort = 80
+
+[deployment]
+deploymentTarget = "vm"
+run = ["node", "src/server.mjs"]
