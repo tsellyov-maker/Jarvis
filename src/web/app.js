@@ -25,6 +25,32 @@ const remindersLoading  = document.querySelector('#reminders-loading');
 const reminderList      = document.querySelector('#reminder-list');
 const remindersEmpty    = document.querySelector('#reminders-empty');
 
+const settingsOpenBtn   = document.querySelector('#settings-open-btn');
+const settingsCloseBtn  = document.querySelector('#settings-close-btn');
+const settingsDrawer    = document.querySelector('#settings-drawer');
+const cfgTokenInput     = document.querySelector('#cfg-token-input');
+const cfgTokenToggle    = document.querySelector('#cfg-token-toggle');
+const cfgEyeShow        = document.querySelector('#cfg-eye-show');
+const cfgEyeHide        = document.querySelector('#cfg-eye-hide');
+const cfgTokenSave      = document.querySelector('#cfg-token-save');
+const cfgTokenClear     = document.querySelector('#cfg-token-clear');
+const cfgTokenFeedback  = document.querySelector('#cfg-token-feedback');
+const cfgTestJarvis     = document.querySelector('#cfg-test-jarvis');
+const cfgTestOllama     = document.querySelector('#cfg-test-ollama');
+const cfgTestHa         = document.querySelector('#cfg-test-ha');
+const cfgDotJarvis      = document.querySelector('#cfg-dot-jarvis');
+const cfgDotOllama      = document.querySelector('#cfg-dot-ollama');
+const cfgDotHa          = document.querySelector('#cfg-dot-ha');
+const cfgDetailJarvis   = document.querySelector('#cfg-test-jarvis-detail');
+const cfgDetailOllama   = document.querySelector('#cfg-test-ollama-detail');
+const cfgDetailHa       = document.querySelector('#cfg-test-ha-detail');
+const cfgInfoDb         = document.querySelector('#cfg-info-db');
+const cfgInfoAi         = document.querySelector('#cfg-info-ai');
+const cfgInfoTts        = document.querySelector('#cfg-info-tts');
+const cfgInfoOffline    = document.querySelector('#cfg-info-offline');
+const cfgInfoNode       = document.querySelector('#cfg-info-node');
+const cfgClearChat      = document.querySelector('#cfg-clear-chat');
+
 let typingEl = null;
 let isSending = false;
 
@@ -164,7 +190,7 @@ async function sendCommand(simulatedVoice = false) {
 /* ── DRAWER SHARED ──────────────────────────────────────── */
 
 function closeAllDrawers() {
-  for (const drawer of [memoryDrawer, remindersDrawer]) {
+  for (const drawer of [memoryDrawer, remindersDrawer, settingsDrawer]) {
     drawer.classList.remove('open');
     drawer.setAttribute('aria-hidden', 'true');
   }
@@ -405,6 +431,126 @@ async function fetchReminders() {
 
 remindersOpenBtn.addEventListener('click', openRemindersDrawer);
 remindersCloseBtn.addEventListener('click', closeRemindersDrawer);
+
+/* ── SETTINGS DRAWER ────────────────────────────────────── */
+
+function openSettingsDrawer() {
+  openDrawer(settingsDrawer, loadSettingsDrawer);
+}
+
+function loadSettingsDrawer() {
+  const saved = localStorage.getItem('jarvis_api_token') || '';
+  cfgTokenInput.value = saved;
+  cfgTokenFeedback.textContent = saved ? 'Token carregado do armazenamento local.' : '';
+  cfgTokenFeedback.className   = saved ? 'cfg-feedback ok' : 'cfg-feedback';
+  loadSystemInfo();
+}
+
+/* token visibility toggle */
+cfgTokenToggle.addEventListener('click', () => {
+  const isHidden = cfgTokenInput.type === 'password';
+  cfgTokenInput.type  = isHidden ? 'text' : 'password';
+  cfgEyeShow.hidden   = isHidden;
+  cfgEyeHide.hidden   = !isHidden;
+});
+
+/* save token */
+cfgTokenSave.addEventListener('click', () => {
+  const val = cfgTokenInput.value.trim();
+  if (!val) {
+    cfgTokenFeedback.textContent = 'Digite um token antes de salvar.';
+    cfgTokenFeedback.className = 'cfg-feedback err';
+    return;
+  }
+  localStorage.setItem('jarvis_api_token', val);
+  cfgTokenFeedback.textContent = 'Token salvo com sucesso.';
+  cfgTokenFeedback.className   = 'cfg-feedback ok';
+});
+
+/* clear token */
+cfgTokenClear.addEventListener('click', () => {
+  localStorage.removeItem('jarvis_api_token');
+  cfgTokenInput.value = '';
+  cfgTokenFeedback.textContent = 'Token removido.';
+  cfgTokenFeedback.className   = 'cfg-feedback';
+});
+
+/* test helpers */
+function setTestState(dot, detail, state, text) {
+  dot.className = `cfg-status-dot${state ? ' ' + state : ''}`;
+  detail.textContent = text;
+}
+
+async function runTest(btn, dot, detail, testFn) {
+  btn.disabled = true;
+  setTestState(dot, detail, 'spin', 'Verificando…');
+  try {
+    await testFn(dot, detail);
+  } catch {
+    setTestState(dot, detail, 'err', 'Erro de rede.');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+/* test Jarvis server */
+cfgTestJarvis.addEventListener('click', () =>
+  runTest(cfgTestJarvis, cfgDotJarvis, cfgDetailJarvis, async (dot, detail) => {
+    const res  = await fetch('/health');
+    const data = await res.json();
+    const ok   = res.ok && data.ok;
+    setTestState(dot, detail, ok ? 'ok' : 'err', ok ? `${data.service} — online` : 'Servidor não respondeu.');
+  })
+);
+
+/* test Ollama via /status */
+cfgTestOllama.addEventListener('click', () =>
+  runTest(cfgTestOllama, cfgDotOllama, cfgDetailOllama, async (dot, detail) => {
+    const res  = await jarvisFetch('/status');
+    const data = await res.json();
+    const ai   = data.ai || {};
+    const ok   = Boolean(data.online);
+    setTestState(dot, detail, ok ? 'ok' : 'err',
+      ok ? `${ai.chatModel || ai.commandModel || 'modelo desconhecido'}` : 'Offline ou não configurado.');
+  })
+);
+
+/* test Home Assistant via /status */
+cfgTestHa.addEventListener('click', () =>
+  runTest(cfgTestHa, cfgDotHa, cfgDetailHa, async (dot, detail) => {
+    const res  = await jarvisFetch('/status');
+    const data = await res.json();
+    const ha   = data.homeAssistant || {};
+    const ok   = Boolean(ha.configured);
+    setTestState(dot, detail, ok ? 'ok' : 'err',
+      ok ? `Entidade: ${ha.lightEntity || '—'}` : 'HA_URL / HA_TOKEN não configurados.');
+  })
+);
+
+/* system info */
+async function loadSystemInfo() {
+  try {
+    const res  = await jarvisFetch('/status');
+    if (!res.ok) return;
+    const d = await res.json();
+    cfgInfoDb.textContent      = d.database?.ok ? 'Online' : 'Degradado';
+    cfgInfoAi.textContent      = d.ai?.chatModel || d.ai?.provider || '—';
+    cfgInfoTts.textContent     = d.tts?.provider || '—';
+    cfgInfoOffline.textContent = d.offlineMode ? 'Ativo' : 'Não';
+    cfgInfoNode.textContent    = d.process?.node || '—';
+  } catch { /* ignore */ }
+}
+
+/* clear chat */
+cfgClearChat.addEventListener('click', () => {
+  feed.innerHTML = '';
+  feed.appendChild(feedEmpty);
+  feedEmpty.style.display = '';
+  closeAllDrawers();
+});
+
+settingsOpenBtn.addEventListener('click', openSettingsDrawer);
+settingsCloseBtn.addEventListener('click', closeAllDrawers);
 
 document.addEventListener('keydown', (ev) => {
   if (ev.key === 'Escape') closeAllDrawers();
