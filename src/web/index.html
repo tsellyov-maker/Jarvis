@@ -2,82 +2,59 @@
 <html lang="pt-BR">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Jarvis Local</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#0a0b0f">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Jarvis</title>
     <link rel="stylesheet" href="/style.css">
   </head>
   <body>
-    <main class="shell">
-      <section class="topbar">
-        <div>
-          <h1>Jarvis Local</h1>
-          <p class="subtitle">Assistente pessoal sempre ativo</p>
-        </div>
-        <div class="status-pill" id="status-pill">
-          <span class="dot"></span>
-          <span id="status-text">conectando</span>
-        </div>
-      </section>
 
-      <section class="panel">
-        <div class="metric">
-          <span class="label">Wake word</span>
-          <strong id="wake-word">jarvis</strong>
-        </div>
-        <div class="metric">
-          <span class="label">Microfone</span>
-          <strong id="microphone">verificando</strong>
-        </div>
-        <div class="metric">
-          <span class="label">Scheduler</span>
-          <strong id="scheduler">verificando</strong>
-        </div>
-        <div class="metric">
-          <span class="label">Banco</span>
-          <strong id="database">verificando</strong>
-        </div>
-        <div class="metric">
-          <span class="label">IA local</span>
-          <strong id="ai">verificando</strong>
-        </div>
-        <div class="metric">
-          <span class="label">Requests</span>
-          <strong id="requests">0</strong>
-        </div>
-        <div class="metric">
-          <span class="label">Offline</span>
-          <strong id="offline-mode">verificando</strong>
-        </div>
-      </section>
+    <header class="topbar">
+      <div class="topbar-brand">
+        <span class="brand-icon">◈</span>
+        <span class="brand-name">JARVIS</span>
+      </div>
+      <div class="status-pill" id="status-pill">
+        <span class="dot"></span>
+        <span id="status-text">conectando</span>
+      </div>
+    </header>
 
-      <section class="activity">
-        <div class="activity-row">
-          <span>Último comando</span>
-          <p id="last-command">Ainda não recebi comandos.</p>
-        </div>
-        <div class="activity-row">
-          <span>Última resposta</span>
-          <p id="last-response">Aguardando atividade.</p>
-        </div>
-      </section>
-
-      <section class="composer">
-        <label for="command-input">Enviar comando manual</label>
-        <div class="command-bar">
-          <input id="command-input" type="text" autocomplete="off" placeholder="Ex.: que horas são">
-          <button id="send-button" type="button">Enviar</button>
-          <button id="speak-button" type="button">Falar</button>
-        </div>
-      </section>
-
-      <section class="events">
-        <div class="section-title">
-          <span>Eventos recentes</span>
-          <button id="refresh-events" type="button">Atualizar</button>
-        </div>
-        <ol id="events-list"></ol>
-      </section>
+    <main class="feed" id="feed">
+      <div class="feed-empty" id="feed-empty">
+        <span class="feed-empty-icon">◈</span>
+        <p>Pronto para ouvir você.</p>
+      </div>
     </main>
+
+    <footer class="toolbar">
+      <div class="input-row">
+        <input
+          id="command-input"
+          type="text"
+          autocomplete="off"
+          autocorrect="off"
+          spellcheck="false"
+          placeholder="Digite um comando…"
+          enterkeyhint="send"
+        >
+        <button class="btn-send" id="send-button" type="button" aria-label="Enviar">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+      <button class="btn-voice" id="voice-button" type="button" aria-label="Comando de voz">
+        <span class="voice-ring"></span>
+        <svg class="voice-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+          <line x1="12" y1="19" x2="12" y2="23"/>
+          <line x1="8" y1="23" x2="16" y2="23"/>
+        </svg>
+      </button>
+    </footer>
 
     <script type="module" src="/app.js"></script>
   </body>
