@@ -336,6 +336,297 @@ input:focus {
 .btn-send:active { transform: scale(0.9); }
 .btn-send:hover  { background: var(--surface); }
 
+/* ── MEMORY BUTTON (topbar) ──────────────────────────────── */
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-memory-open {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+
+.btn-memory-open:hover { background: var(--surface-2); color: var(--text); }
+.btn-memory-open:active { transform: scale(0.92); }
+
+.memory-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 99px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 18px;
+  text-align: center;
+  pointer-events: none;
+}
+
+/* ── DRAWER BACKDROP ─────────────────────────────────────── */
+
+.drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.28s ease;
+}
+
+.drawer-backdrop.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* ── MEMORY DRAWER ───────────────────────────────────────── */
+
+.memory-drawer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 50;
+  max-width: 640px;
+  margin: 0 auto;
+  max-height: 78vh;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-bottom: none;
+  border-radius: 20px 20px 0 0;
+  display: flex;
+  flex-direction: column;
+  transform: translateY(100%);
+  transition: transform 0.32s cubic-bezier(0.32, 0.72, 0, 1);
+  will-change: transform;
+}
+
+.memory-drawer.open {
+  transform: translateY(0);
+}
+
+.drawer-handle {
+  width: 36px;
+  height: 4px;
+  border-radius: 99px;
+  background: var(--border);
+  margin: 12px auto 0;
+  flex-shrink: 0;
+}
+
+.drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px 12px;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.drawer-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.drawer-title svg { color: var(--accent); }
+
+.btn-drawer-close {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+
+.btn-drawer-close:hover { background: var(--surface-2); }
+
+/* ── MEMORY ADD FORM ─────────────────────────────────────── */
+
+.memory-add-form {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.memory-add-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.memory-kind-select {
+  height: 40px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-2);
+  color: var(--text-2);
+  font: inherit;
+  font-size: 13px;
+  padding: 0 8px;
+  cursor: pointer;
+  outline: none;
+  flex-shrink: 0;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.memory-kind-select:focus { border-color: rgba(99,102,241,0.6); }
+
+.memory-add-input {
+  flex: 1;
+  height: 40px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-2);
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  padding: 0 12px;
+  outline: none;
+  min-width: 0;
+  transition: border-color 0.2s;
+}
+
+.memory-add-input::placeholder { color: var(--text-3); }
+.memory-add-input:focus { border-color: rgba(99,102,241,0.6); }
+
+.btn-memory-add {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.btn-memory-add:hover  { background: #4f52d9; }
+.btn-memory-add:active { transform: scale(0.9); }
+
+/* ── MEMORY LIST ─────────────────────────────────────────── */
+
+.memory-list-wrap {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  flex: 1;
+  padding: 10px 16px 16px;
+  padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+}
+
+.memory-loading {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  padding: 28px 0;
+}
+
+.memory-loading span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-3);
+  animation: bounce 1.2s ease-in-out infinite;
+}
+
+.memory-loading span:nth-child(2) { animation-delay: 0.2s; }
+.memory-loading span:nth-child(3) { animation-delay: 0.4s; }
+.memory-loading[hidden]           { display: none; }
+
+.memory-empty {
+  text-align: center;
+  color: var(--text-3);
+  font-size: 14px;
+  padding: 28px 0;
+}
+
+.memory-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.memory-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 11px 13px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  animation: slide-in 0.22s ease;
+}
+
+@keyframes slide-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.memory-item-kind {
+  flex-shrink: 0;
+  margin-top: 1px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: rgba(99,102,241,0.12);
+  border-radius: 6px;
+  padding: 3px 7px;
+  line-height: 1.4;
+}
+
+.memory-item-text {
+  flex: 1;
+  font-size: 14px;
+  color: var(--text);
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.memory-item-time {
+  flex-shrink: 0;
+  font-size: 11px;
+  color: var(--text-3);
+  margin-top: 2px;
+  white-space: nowrap;
+}
+
 /* ── DESKTOP BOOST ───────────────────────────────────────── */
 
 @media (min-width: 480px) {

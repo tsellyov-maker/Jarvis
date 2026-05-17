@@ -17,11 +17,62 @@
         <span class="brand-icon">◈</span>
         <span class="brand-name">JARVIS</span>
       </div>
-      <div class="status-pill" id="status-pill">
-        <span class="dot"></span>
-        <span id="status-text">conectando</span>
+      <div class="topbar-right">
+        <button class="btn-memory-open" id="memory-open-btn" type="button" aria-label="Abrir memória">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a9 9 0 0 1 9 9c0 4.17-2.84 7.67-6.75 8.7L12 22l-2.25-2.3C5.84 18.67 3 15.17 3 11a9 9 0 0 1 9-9z"/><circle cx="12" cy="11" r="3"/></svg>
+          <span class="memory-badge" id="memory-badge" hidden>0</span>
+        </button>
+        <div class="status-pill" id="status-pill">
+          <span class="dot"></span>
+          <span id="status-text">conectando</span>
+        </div>
       </div>
     </header>
+
+    <div class="drawer-backdrop" id="drawer-backdrop"></div>
+    <aside class="memory-drawer" id="memory-drawer" aria-hidden="true">
+      <div class="drawer-handle"></div>
+      <div class="drawer-header">
+        <h2 class="drawer-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a9 9 0 0 1 9 9c0 4.17-2.84 7.67-6.75 8.7L12 22l-2.25-2.3C5.84 18.67 3 15.17 3 11a9 9 0 0 1 9-9z"/><circle cx="12" cy="11" r="3"/></svg>
+          Memória
+        </h2>
+        <button class="btn-drawer-close" id="memory-close-btn" type="button" aria-label="Fechar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <form class="memory-add-form" id="memory-add-form" autocomplete="off">
+        <div class="memory-add-row">
+          <select class="memory-kind-select" id="memory-kind" aria-label="Categoria">
+            <option value="notes">Nota</option>
+            <option value="task">Tarefa</option>
+            <option value="reminder">Lembrete</option>
+            <option value="fact">Fato</option>
+          </select>
+          <input
+            class="memory-add-input"
+            id="memory-add-input"
+            type="text"
+            placeholder="Adicionar à memória…"
+            autocomplete="off"
+            autocorrect="off"
+            spellcheck="false"
+          >
+          <button class="btn-memory-add" type="submit" aria-label="Salvar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+        </div>
+      </form>
+
+      <div class="memory-list-wrap">
+        <div class="memory-loading" id="memory-loading">
+          <span></span><span></span><span></span>
+        </div>
+        <ul class="memory-list" id="memory-list"></ul>
+        <p class="memory-empty" id="memory-empty" hidden>Nenhum item na memória ainda.</p>
+      </div>
+    </aside>
 
     <main class="feed" id="feed">
       <div class="feed-empty" id="feed-empty">

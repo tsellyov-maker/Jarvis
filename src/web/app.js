@@ -1,10 +1,21 @@
-const statusPill   = document.querySelector('#status-pill');
-const statusText   = document.querySelector('#status-text');
-const feed         = document.querySelector('#feed');
-const feedEmpty    = document.querySelector('#feed-empty');
-const commandInput = document.querySelector('#command-input');
-const sendButton   = document.querySelector('#send-button');
-const voiceButton  = document.querySelector('#voice-button');
+const statusPill     = document.querySelector('#status-pill');
+const statusText     = document.querySelector('#status-text');
+const feed           = document.querySelector('#feed');
+const feedEmpty      = document.querySelector('#feed-empty');
+const commandInput   = document.querySelector('#command-input');
+const sendButton     = document.querySelector('#send-button');
+const voiceButton    = document.querySelector('#voice-button');
+const memoryOpenBtn  = document.querySelector('#memory-open-btn');
+const memoryCloseBtn = document.querySelector('#memory-close-btn');
+const memoryDrawer   = document.querySelector('#memory-drawer');
+const drawerBackdrop = document.querySelector('#drawer-backdrop');
+const memoryBadge    = document.querySelector('#memory-badge');
+const memoryLoading  = document.querySelector('#memory-loading');
+const memoryList     = document.querySelector('#memory-list');
+const memoryEmpty    = document.querySelector('#memory-empty');
+const memoryAddForm  = document.querySelector('#memory-add-form');
+const memoryAddInput = document.querySelector('#memory-add-input');
+const memoryKind     = document.querySelector('#memory-kind');
 
 let typingEl = null;
 let isSending = false;
@@ -141,6 +152,133 @@ async function sendCommand(simulatedVoice = false) {
     setVoiceLoading(false);
   }
 }
+
+/* ── MEMORY DRAWER ──────────────────────────────────────── */
+
+function openDrawer() {
+  memoryDrawer.classList.add('open');
+  memoryDrawer.setAttribute('aria-hidden', 'false');
+  drawerBackdrop.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  fetchMemory();
+}
+
+function closeDrawer() {
+  memoryDrawer.classList.remove('open');
+  memoryDrawer.setAttribute('aria-hidden', 'true');
+  drawerBackdrop.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function updateBadge(count) {
+  if (count > 0) {
+    memoryBadge.textContent = count > 99 ? '99+' : String(count);
+    memoryBadge.hidden = false;
+  } else {
+    memoryBadge.hidden = true;
+  }
+}
+
+function formatMemoryDate(val) {
+  if (!val) return '';
+  try {
+    const d = new Date(val);
+    return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
+      + ' ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  } catch { return ''; }
+}
+
+function kindLabel(kind) {
+  const map = { notes: 'Nota', task: 'Tarefa', reminder: 'Lembrete', fact: 'Fato' };
+  return map[kind] || kind;
+}
+
+function renderMemory(items) {
+  memoryList.innerHTML = '';
+
+  if (!items || items.length === 0) {
+    memoryEmpty.hidden = false;
+    updateBadge(0);
+    return;
+  }
+
+  memoryEmpty.hidden = true;
+  updateBadge(items.length);
+
+  for (const item of items) {
+    const li = document.createElement('li');
+    li.className = 'memory-item';
+
+    const kindEl = document.createElement('span');
+    kindEl.className = 'memory-item-kind';
+    kindEl.textContent = kindLabel(item.kind || item.type || 'notes');
+
+    const textEl = document.createElement('span');
+    textEl.className = 'memory-item-text';
+    textEl.textContent = item.text || item.content || '';
+
+    const timeEl = document.createElement('span');
+    timeEl.className = 'memory-item-time';
+    timeEl.textContent = formatMemoryDate(item.createdAt || item.created_at || item.at);
+
+    li.append(kindEl, textEl, timeEl);
+    memoryList.append(li);
+  }
+}
+
+async function fetchMemory() {
+  memoryLoading.hidden = false;
+  memoryEmpty.hidden = true;
+  memoryList.innerHTML = '';
+
+  try {
+    const res  = await jarvisFetch('/memory');
+    const data = await res.json();
+    const items = Array.isArray(data) ? data : (data.items || data.memory || []);
+    renderMemory(items);
+  } catch {
+    memoryEmpty.textContent = 'Erro ao carregar memória.';
+    memoryEmpty.hidden = false;
+  } finally {
+    memoryLoading.hidden = true;
+  }
+}
+
+async function addMemoryItem(text, kind) {
+  const btn = memoryAddForm.querySelector('.btn-memory-add');
+  btn.disabled = true;
+
+  try {
+    const res  = await jarvisFetch('/memory', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, kind })
+    });
+
+    if (res.ok) {
+      memoryAddInput.value = '';
+      await fetchMemory();
+    }
+  } finally {
+    btn.disabled = false;
+    memoryAddInput.focus();
+  }
+}
+
+memoryOpenBtn.addEventListener('click', openDrawer);
+memoryCloseBtn.addEventListener('click', closeDrawer);
+drawerBackdrop.addEventListener('click', closeDrawer);
+
+memoryAddForm.addEventListener('submit', (ev) => {
+  ev.preventDefault();
+  const text = memoryAddInput.value.trim();
+  if (!text) { memoryAddInput.focus(); return; }
+  addMemoryItem(text, memoryKind.value);
+});
+
+document.addEventListener('keydown', (ev) => {
+  if (ev.key === 'Escape' && memoryDrawer.classList.contains('open')) closeDrawer();
+});
 
 /* ── VOICE BUTTON STATE ─────────────────────────────────── */
 
