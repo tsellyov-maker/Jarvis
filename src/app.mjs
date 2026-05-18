@@ -75,6 +75,7 @@ function createApp({
         styleSrc: ["'self'"],
         imgSrc: ["'self'", 'data:'],
         connectSrc: ["'self'", 'ws:', 'wss:'],
+        mediaSrc: ["'self'"],
         objectSrc: ["'none'"],
         baseUri: ["'self'"],
         formAction: ["'self'"]

@@ -167,8 +167,8 @@
 
   function playAudio(url) {
     const audio = new Audio(url);
-    audio.play().catch(() => {
-      // Autoplay bloqueado ou arquivo inexistente — silencioso
+    audio.play().catch((err) => {
+      console.warn('[Jarvis] playAudio falhou:', err.name, err.message);
     });
   }
 
