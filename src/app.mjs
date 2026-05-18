@@ -132,14 +132,20 @@ function createApp({
   });
 
   app.get('/ready', (req, res) => {
-    const status = getStatus();
-    const ready = Boolean(status.online && status.database?.ok);
+    let status;
+    try {
+      status = getStatus();
+    } catch {
+      status = {};
+    }
+    const dbOk = Boolean(status?.database?.ok);
+    const ready = Boolean(status?.online && dbOk);
     res.status(ready ? 200 : 503).json({
       ok: ready,
       status: ready ? 'ready' : 'degraded',
-      database: status.database,
-      wakeLoop: status.wakeLoop,
-      scheduler: status.scheduler,
+      database: status?.database || null,
+      wakeLoop: status?.wakeLoop || null,
+      scheduler: status?.scheduler || null,
       at: new Date().toISOString()
     });
   });
@@ -185,17 +191,38 @@ function createApp({
       return;
     }
 
-    const durationSeconds = Math.min(Math.max(Number(req.body?.durationSeconds || 6), 1), 30);
-    const transcript = await voiceListener.listenOnce({
-      durationSeconds,
-      prefix: 'manual'
-    });
+    if (!voiceListener) {
+      res.status(503).json({
+        ok: false,
+        text: 'Servico de escuta de voz nao esta disponivel. Configure MIC_RECORDING_ENABLED ou envie texto simulado.',
+        source: 'http-listen'
+      });
+      return;
+    }
 
-    if (!transcript.text) {
+    const durationSeconds = Math.min(Math.max(Number(req.body?.durationSeconds || 6), 1), 30);
+    let transcript;
+    try {
+      transcript = await voiceListener.listenOnce({
+        durationSeconds,
+        prefix: 'manual'
+      });
+    } catch (error) {
+      res.status(503).json({
+        ok: false,
+        text: 'Falha ao escutar audio: ' + (error.message || 'servico indisponivel'),
+        audioPath: null,
+        source: 'http-listen'
+      });
+      return;
+    }
+
+    if (!transcript || !transcript.text) {
       res.status(422).json({
         ok: false,
         text: 'Nao consegui transcrever o audio.',
-        audioPath: transcript.audioPath
+        audioPath: transcript?.audioPath || null,
+        source: 'http-listen'
       });
       return;
     }

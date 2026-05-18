@@ -7,8 +7,13 @@ import { logger } from '../core/logger.mjs';
 
 const srcDir = join(dirname(fileURLToPath(import.meta.url)), '..');
 
+function defaultRemindersPath() {
+  const dataDir = process.env.DATA_DIR || join(srcDir, 'data');
+  return join(dataDir, 'reminders.json');
+}
+
 class ReminderService {
-  constructor({ databaseService = null, filePath = join(srcDir, 'data', 'reminders.json') } = {}) {
+  constructor({ databaseService = null, filePath = process.env.REMINDERS_PATH || defaultRemindersPath() } = {}) {
     this.databaseService = databaseService;
     this.filePath = filePath;
   }

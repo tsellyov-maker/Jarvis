@@ -5,27 +5,40 @@ class OllamaService {
     this.url = url.replace(/\/$/, '');
   }
 
-  async request(path, body, { timeoutMs = 60000 } = {}) {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), timeoutMs);
+  async request(path, body, { timeoutMs = 60000, retries = 2, retryDelayMs = 500 } = {}) {
+    let lastError;
 
-    try {
-      const response = await fetch(`${this.url}${path}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-        signal: controller.signal
-      });
+    for (let attempt = 0; attempt <= retries; attempt += 1) {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
-      if (!response.ok) {
-        const errorText = await response.text().catch(() => '');
-        throw new Error(`Ollama respondeu ${response.status}: ${errorText}`);
+      try {
+        const response = await fetch(`${this.url}${path}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+          signal: controller.signal
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text().catch(() => '');
+          throw new Error(`Ollama respondeu ${response.status}: ${errorText}`);
+        }
+
+        return await response.json();
+      } catch (error) {
+        lastError = error;
+        if (attempt < retries) {
+          const delay = retryDelayMs * (attempt + 1);
+          logger.warn('ollama', `Tentativa ${attempt + 1} falhou; retentando em ${delay}ms.`, { error: error.message });
+          await new Promise((resolve) => setTimeout(resolve, delay));
+        }
+      } finally {
+        clearTimeout(timeout);
       }
-
-      return await response.json();
-    } finally {
-      clearTimeout(timeout);
     }
+
+    throw lastError;
   }
 
   async generate({ model, prompt, system = null, format = null, options = {}, timeoutMs = 60000 }) {

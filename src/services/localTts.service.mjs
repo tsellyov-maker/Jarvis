@@ -9,6 +9,11 @@ import { logger } from '../core/logger.mjs';
 const execFileAsync = promisify(execFile);
 const srcDir = join(dirname(fileURLToPath(import.meta.url)), '..');
 
+function defaultAudioOutputDir() {
+  const audioDir = process.env.AUDIO_DIR || join(srcDir, 'audio');
+  return join(audioDir, 'output');
+}
+
 function quoteShell(value) {
   return `'${String(value).replace(/'/g, "'\\''")}'`;
 }
@@ -17,7 +22,7 @@ class LocalTtsService {
   constructor({
     provider = process.env.TTS_LOCAL_FALLBACK || 'piper',
     piperCommand = process.env.PIPER_COMMAND || '',
-    outputDir = join(srcDir, 'audio', 'output'),
+    outputDir = process.env.AUDIO_OUTPUT_DIR || defaultAudioOutputDir(),
     timeoutMs = Number(process.env.PIPER_TIMEOUT_MS || 30000)
   } = {}) {
     this.provider = provider;

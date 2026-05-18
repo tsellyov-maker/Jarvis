@@ -6,11 +6,16 @@ import { logger } from '../core/logger.mjs';
 
 const srcDir = join(dirname(fileURLToPath(import.meta.url)), '..');
 
+function defaultAudioOutputDir() {
+  const audioDir = process.env.AUDIO_DIR || join(srcDir, 'audio');
+  return join(audioDir, 'output');
+}
+
 class FishAudioService {
   constructor({
     apiKey = process.env.FISH_AUDIO_API_KEY || '',
     voiceId = process.env.FISH_AUDIO_VOICE_ID || '',
-    outputDir = join(srcDir, 'audio', 'output'),
+    outputDir = process.env.AUDIO_OUTPUT_DIR || defaultAudioOutputDir(),
     timeoutMs = Number(process.env.FISH_AUDIO_TIMEOUT_MS || 12000)
   } = {}) {
     this.apiKey = apiKey;

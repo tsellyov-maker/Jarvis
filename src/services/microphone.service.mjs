@@ -8,6 +8,11 @@ import { logger } from '../core/logger.mjs';
 
 const srcDir = join(dirname(fileURLToPath(import.meta.url)), '..');
 
+function defaultAudioInputDir() {
+  const audioDir = process.env.AUDIO_DIR || join(srcDir, 'audio');
+  return join(audioDir, 'input');
+}
+
 function quoteShell(value) {
   return `'${String(value).replace(/'/g, "'\\''")}'`;
 }
@@ -15,7 +20,7 @@ function quoteShell(value) {
 class MicrophoneService {
   constructor({
     recordCommand = process.env.MIC_RECORD_COMMAND || '',
-    inputDir = join(srcDir, 'audio', 'input')
+    inputDir = process.env.AUDIO_INPUT_DIR || defaultAudioInputDir()
   } = {}) {
     this.disabled = ['false', 'off', 'none', 'disabled'].includes(String(recordCommand).trim().toLowerCase());
     this.recordCommand = this.disabled ? '' : recordCommand;

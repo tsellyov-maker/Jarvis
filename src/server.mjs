@@ -49,6 +49,12 @@ const zone = process.env.TIMEZONE || 'America/Sao_Paulo';
 const port = Number(process.env.PORT || 3000);
 const host = '0.0.0.0';
 
+/* ── diretórios de dados via env ────────────────────────────── */
+const dataDir = process.env.DATA_DIR || join(srcDir, 'data');
+const audioDir = process.env.AUDIO_DIR || join(srcDir, 'audio');
+process.env.DATA_DIR = dataDir;
+process.env.AUDIO_DIR = audioDir;
+
 function envEnabled(name) {
   return ['true', '1', 'yes', 'on', 'enabled'].includes(
     String(process.env[name] || '').trim().toLowerCase()
@@ -126,9 +132,9 @@ function publicStatus({
 
 async function ensureRuntimeDirs() {
   await Promise.all([
-    mkdir(join(srcDir, 'data'), { recursive: true }),
-    mkdir(join(srcDir, 'audio', 'input'), { recursive: true }),
-    mkdir(join(srcDir, 'audio', 'output'), { recursive: true })
+    mkdir(dataDir, { recursive: true }),
+    mkdir(join(audioDir, 'input'), { recursive: true }),
+    mkdir(join(audioDir, 'output'), { recursive: true })
   ]);
 }
 
@@ -173,20 +179,55 @@ async function main() {
   await ensureRuntimeDirs();
 
   const databaseService = new DatabaseService();
-  await databaseService.initialize();
+  let dbOk = false;
+  try {
+    await databaseService.initialize();
+    dbOk = true;
+  } catch (error) {
+    logger.error('server', 'Falha ao inicializar SQLite; continuando com fallback em arquivo JSON.', error);
+  }
+
   const metricsService = new MetricsService({ zone });
   const auditService = new AuditService({ databaseService });
   const networkService = new NetworkService();
-  await networkService.start();
+  try {
+    await networkService.start();
+  } catch (error) {
+    logger.warn('server', 'Falha ao iniciar monitor de rede; continuando.', error);
+  }
 
-  const memoryService = new MemoryService({ databaseService });
-  const reminderService = new ReminderService({ databaseService });
-  await memoryService.ensureStorage();
-  await reminderService.ensureStorage();
+  const memoryService = new MemoryService({ databaseService: dbOk ? databaseService : null });
+  const reminderService = new ReminderService({ databaseService: dbOk ? databaseService : null });
+  try {
+    await memoryService.ensureStorage();
+  } catch (error) {
+    logger.warn('server', 'Falha ao preparar memoria; continuando.', error);
+  }
+  try {
+    await reminderService.ensureStorage();
+  } catch (error) {
+    logger.warn('server', 'Falha ao preparar lembretes; continuando.', error);
+  }
 
-  const ollamaService = new OllamaService();
-  const aiService = new AiService({ ollamaService });
-  const fishAudioService = new FishAudioService();
+  let ollamaService;
+  let aiService;
+  try {
+    ollamaService = new OllamaService();
+    aiService = new AiService({ ollamaService });
+  } catch (error) {
+    logger.warn('server', 'Falha ao preparar Ollama; modo conversacao ficara degradado.', error);
+    ollamaService = null;
+    aiService = null;
+  }
+
+  let fishAudioService;
+  try {
+    fishAudioService = new FishAudioService();
+  } catch (error) {
+    logger.warn('server', 'Fish Audio nao configurado; TTS remoto indisponivel.', error);
+    fishAudioService = null;
+  }
+
   const audioPlayerService = new AudioPlayerService();
   const localTtsService = new LocalTtsService();
   const ttsService = new TtsService({
@@ -198,11 +239,17 @@ async function main() {
   const sttService = new SttService();
   const microphoneService = new MicrophoneService();
   const wakeWordService = new WakeWordService();
-  const homeAssistantService = new HomeAssistantService();
+  let homeAssistantService;
+  try {
+    homeAssistantService = new HomeAssistantService();
+  } catch (error) {
+    logger.warn('server', 'Home Assistant nao configurado; automacao de luz ficara simulada.', error);
+    homeAssistantService = null;
+  }
 
   const voiceModule = new VoiceModule({ ttsService });
-  const conversationModule = new ConversationModule({ aiService, memoryService });
-  const lightModule = new LightModule({ homeAssistantService });
+  const conversationModule = new ConversationModule({ aiService: aiService || undefined, memoryService });
+  const lightModule = new LightModule({ homeAssistantService: homeAssistantService || undefined });
   const memoryModule = new MemoryModule({ memoryService });
   const reminderModule = new ReminderModule({ reminderService, zone });
 
@@ -387,8 +434,8 @@ async function main() {
     logger.info('server', `Recebido ${signal}. Encerrando com cuidado.`);
     status.online = false;
     scheduler.stop();
-    await wakeLoop.stop();
-    voiceListener.stop();
+    await wakeLoop?.stop?.();
+    voiceListener?.stop?.();
     networkService.stop();
     clearInterval(wsHeartbeat);
     wss.close();

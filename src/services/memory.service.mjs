@@ -7,6 +7,11 @@ import { logger } from '../core/logger.mjs';
 
 const srcDir = join(dirname(fileURLToPath(import.meta.url)), '..');
 
+function defaultMemoryPath() {
+  const dataDir = process.env.DATA_DIR || join(srcDir, 'data');
+  return join(dataDir, 'memory.json');
+}
+
 const DEFAULT_MEMORY = {
   notes: [],
   facts: [],
@@ -15,7 +20,7 @@ const DEFAULT_MEMORY = {
 };
 
 class MemoryService {
-  constructor({ databaseService = null, filePath = join(srcDir, 'data', 'memory.json') } = {}) {
+  constructor({ databaseService = null, filePath = process.env.MEMORY_PATH || defaultMemoryPath() } = {}) {
     this.databaseService = databaseService;
     this.filePath = filePath;
   }

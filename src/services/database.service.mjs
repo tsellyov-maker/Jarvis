@@ -11,8 +11,13 @@ function nowIso() {
   return DateTime.now().setZone(process.env.TIMEZONE || 'America/Sao_Paulo').toISO();
 }
 
+function defaultDbPath() {
+  const dataDir = process.env.DATA_DIR || join(srcDir, 'data');
+  return join(dataDir, 'jarvis.sqlite');
+}
+
 class DatabaseService {
-  constructor({ filePath = process.env.DB_PATH || join(srcDir, 'data', 'jarvis.sqlite') } = {}) {
+  constructor({ filePath = process.env.DB_PATH || defaultDbPath() } = {}) {
     this.filePath = resolve(filePath);
     this.db = null;
     this.initializedAt = null;
