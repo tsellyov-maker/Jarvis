@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -13,6 +13,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
+import { Audio } from 'expo-av';
 
 const API_BASE = 'http://IP_DO_PC:5000';
 
@@ -30,6 +31,32 @@ export default function App() {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef(null);
+  const soundRef = useRef(null);
+
+  useEffect(() => {
+    Audio.setAudioModeAsync({
+      allowsRecordingIOS: false,
+      playsInSilentModeIOS: true,
+      staysActiveInBackground: false,
+      shouldDuckAndroid: true,
+    });
+    return () => {
+      soundRef.current?.unloadAsync();
+    };
+  }, []);
+
+  async function playAudioUrl(url) {
+    try {
+      await soundRef.current?.unloadAsync();
+      const { sound } = await Audio.Sound.createAsync(
+        { uri: url },
+        { shouldPlay: true }
+      );
+      soundRef.current = sound;
+    } catch (err) {
+      console.warn('[Jarvis] playAudioUrl falhou:', err.message);
+    }
+  }
 
   const sendMessage = useCallback(async () => {
     const text = input.trim();
@@ -48,16 +75,25 @@ export default function App() {
       });
 
       let reply = 'Sem resposta.';
+      let audioPath = null;
       if (res.ok) {
         const data = await res.json();
         const extracted = extractReply(data);
         reply = extracted != null ? extracted : JSON.stringify(data);
+        if (data.audioPath) {
+          audioPath = data.audioPath.startsWith('http')
+            ? data.audioPath
+            : `${API_BASE}${data.audioPath}`;
+        }
       } else {
         reply = `Erro ${res.status}`;
       }
 
-      const aiMsg = { id: Date.now() + 1, role: 'ai', text: reply };
+      const aiMsg = { id: Date.now() + 1, role: 'ai', text: reply, audioPath };
       setMessages((prev) => [...prev, aiMsg]);
+      if (audioPath) {
+        playAudioUrl(audioPath);
+      }
     } catch (err) {
       const errMsg = { id: Date.now() + 1, role: 'ai', text: 'Erro de conexão.' };
       setMessages((prev) => [...prev, errMsg]);
