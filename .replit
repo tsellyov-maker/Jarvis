@@ -21,6 +21,8 @@ HA_LIGHT_ENTITY = "light.luz_quarto"
 MIC_RECORDING_ENABLED = "false"
 VOICE_LISTENER_ENABLED = "false"
 WAKE_LOOP_ENABLED = "false"
+FISH_AUDIO_API_KEY = "97b6ece7f9af4ac0912f351c8a6d9f22"
+FISH_AUDIO_VOICE_ID = "ec426c7ea3554caba8a5b077a4c701aa"
 
 [workflows]
 runButton = "Project"
@@ -57,6 +59,10 @@ externalPort = 3001
 [[ports]]
 localPort = 5002
 externalPort = 3000
+
+[[ports]]
+localPort = 5003
+externalPort = 3002
 
 [deployment]
 deploymentTarget = "vm"
