@@ -1,226 +1,90 @@
 <!doctype html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <meta name="theme-color" content="#0a0b0f">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Jarvis</title>
-    <link rel="stylesheet" href="/style.css">
-  </head>
-  <body>
-
-    <header class="topbar">
-      <div class="topbar-brand">
-        <span class="brand-icon">◈</span>
-        <span class="brand-name">JARVIS</span>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0a0f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Jarvis</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <div class="header-main">
+        <h1>Jarvis</h1>
+        <button id="config-btn" class="icon-btn" aria-label="Configurações" title="Configurações">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
       </div>
-      <div class="topbar-right">
-        <button class="btn-topbar-icon" id="settings-open-btn" type="button" aria-label="Configurações">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-        </button>
-        <button class="btn-topbar-icon" id="reminders-open-btn" type="button" aria-label="Abrir lembretes">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          <span class="topbar-badge" id="reminders-badge" hidden>0</span>
-        </button>
-        <button class="btn-topbar-icon" id="memory-open-btn" type="button" aria-label="Abrir memória">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a9 9 0 0 1 9 9c0 4.17-2.84 7.67-6.75 8.7L12 22l-2.25-2.3C5.84 18.67 3 15.17 3 11a9 9 0 0 1 9-9z"/><circle cx="12" cy="11" r="3"/></svg>
-          <span class="topbar-badge" id="memory-badge" hidden>0</span>
-        </button>
-        <div class="status-pill" id="status-pill">
-          <span class="dot"></span>
-          <span id="status-text">conectando</span>
-        </div>
+      <div class="status-bar">
+        <span id="status-dot" class="status-dot offline"></span>
+        <span id="status-text">Iniciando...</span>
       </div>
     </header>
 
-    <div class="drawer-backdrop" id="drawer-backdrop"></div>
-
-    <aside class="side-drawer" id="settings-drawer" aria-hidden="true">
-      <div class="drawer-handle"></div>
-      <div class="drawer-header">
-        <h2 class="drawer-title cfg-title">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-          Configurações
-        </h2>
-        <button class="btn-drawer-close" id="settings-close-btn" type="button" aria-label="Fechar">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-      </div>
-
-      <div class="cfg-body">
-
-        <section class="cfg-section">
-          <h3 class="cfg-section-title">Token da API</h3>
-          <p class="cfg-section-desc">Necessário se <code>JARVIS_API_TOKEN</code> estiver definido no servidor.</p>
-          <div class="cfg-token-row">
-            <div class="cfg-input-wrap">
-              <input id="cfg-token-input" type="password" autocomplete="off" spellcheck="false" placeholder="Cole o token aqui…">
-              <button class="cfg-toggle-pw" id="cfg-token-toggle" type="button" aria-label="Mostrar/ocultar token">
-                <svg id="cfg-eye-show" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                <svg id="cfg-eye-hide" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" hidden><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-              </button>
-            </div>
-            <button class="cfg-btn-save" id="cfg-token-save" type="button">Salvar</button>
-            <button class="cfg-btn-ghost" id="cfg-token-clear" type="button">Limpar</button>
-          </div>
-          <p class="cfg-feedback" id="cfg-token-feedback"></p>
-        </section>
-
-        <section class="cfg-section">
-          <h3 class="cfg-section-title">Testar conexões</h3>
-          <div class="cfg-test-list">
-            <div class="cfg-test-row">
-              <div class="cfg-test-info">
-                <span class="cfg-test-name">Servidor Jarvis</span>
-                <span class="cfg-test-detail" id="cfg-test-jarvis-detail">—</span>
-              </div>
-              <button class="cfg-btn-test" id="cfg-test-jarvis" type="button">Testar</button>
-              <span class="cfg-status-dot" id="cfg-dot-jarvis"></span>
-            </div>
-            <div class="cfg-test-row">
-              <div class="cfg-test-info">
-                <span class="cfg-test-name">Ollama (IA local)</span>
-                <span class="cfg-test-detail" id="cfg-test-ollama-detail">—</span>
-              </div>
-              <button class="cfg-btn-test" id="cfg-test-ollama" type="button">Testar</button>
-              <span class="cfg-status-dot" id="cfg-dot-ollama"></span>
-            </div>
-            <div class="cfg-test-row">
-              <div class="cfg-test-info">
-                <span class="cfg-test-name">Home Assistant</span>
-                <span class="cfg-test-detail" id="cfg-test-ha-detail">—</span>
-              </div>
-              <button class="cfg-btn-test" id="cfg-test-ha" type="button">Testar</button>
-              <span class="cfg-status-dot" id="cfg-dot-ha"></span>
-            </div>
-          </div>
-        </section>
-
-        <section class="cfg-section">
-          <h3 class="cfg-section-title">Status do sistema</h3>
-          <ul class="cfg-info-list" id="cfg-info-list">
-            <li class="cfg-info-row"><span>Banco de dados</span><strong id="cfg-info-db">—</strong></li>
-            <li class="cfg-info-row"><span>Modelo de IA</span><strong id="cfg-info-ai">—</strong></li>
-            <li class="cfg-info-row"><span>TTS</span><strong id="cfg-info-tts">—</strong></li>
-            <li class="cfg-info-row"><span>Modo offline</span><strong id="cfg-info-offline">—</strong></li>
-            <li class="cfg-info-row"><span>Processo Node</span><strong id="cfg-info-node">—</strong></li>
-          </ul>
-        </section>
-
-        <section class="cfg-section cfg-section-danger">
-          <h3 class="cfg-section-title">Ações</h3>
-          <button class="cfg-btn-danger" id="cfg-clear-chat" type="button">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></polyline></svg>
-            Limpar conversa
-          </button>
-        </section>
-
-      </div>
-    </aside>
-
-    <aside class="side-drawer" id="reminders-drawer" aria-hidden="true">
-      <div class="drawer-handle"></div>
-      <div class="drawer-header">
-        <h2 class="drawer-title rem-title">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          Lembretes
-        </h2>
-        <button class="btn-drawer-close" id="reminders-close-btn" type="button" aria-label="Fechar">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-      </div>
-
-      <p class="drawer-hint">Crie lembretes pelo chat: <em>"me lembre de beber água às 15h"</em></p>
-
-      <div class="drawer-list-wrap">
-        <div class="drawer-loading" id="reminders-loading">
-          <span></span><span></span><span></span>
+    <main class="chat" id="chat">
+      <div class="welcome" id="welcome">
+        <div class="welcome-icon">
+          <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 1 3 3v14a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
         </div>
-        <ul class="reminder-list" id="reminder-list"></ul>
-        <p class="drawer-empty" id="reminders-empty" hidden>Nenhum lembrete agendado.</p>
-      </div>
-    </aside>
-
-    <aside class="side-drawer" id="memory-drawer" aria-hidden="true">
-      <div class="drawer-handle"></div>
-      <div class="drawer-header">
-        <h2 class="drawer-title">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a9 9 0 0 1 9 9c0 4.17-2.84 7.67-6.75 8.7L12 22l-2.25-2.3C5.84 18.67 3 15.17 3 11a9 9 0 0 1 9-9z"/><circle cx="12" cy="11" r="3"/></svg>
-          Memória
-        </h2>
-        <button class="btn-drawer-close" id="memory-close-btn" type="button" aria-label="Fechar">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-      </div>
-
-      <form class="memory-add-form" id="memory-add-form" autocomplete="off">
-        <div class="memory-add-row">
-          <select class="memory-kind-select" id="memory-kind" aria-label="Categoria">
-            <option value="notes">Nota</option>
-            <option value="task">Tarefa</option>
-            <option value="reminder">Lembrete</option>
-            <option value="fact">Fato</option>
-          </select>
-          <input
-            class="memory-add-input"
-            id="memory-add-input"
-            type="text"
-            placeholder="Adicionar à memória…"
-            autocomplete="off"
-            autocorrect="off"
-            spellcheck="false"
-          >
-          <button class="btn-memory-add" type="submit" aria-label="Salvar">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </button>
-        </div>
-      </form>
-
-      <div class="memory-list-wrap">
-        <div class="memory-loading" id="memory-loading">
-          <span></span><span></span><span></span>
-        </div>
-        <ul class="memory-list" id="memory-list"></ul>
-        <p class="memory-empty" id="memory-empty" hidden>Nenhum item na memória ainda.</p>
-      </div>
-    </aside>
-
-    <main class="feed" id="feed">
-      <div class="feed-empty" id="feed-empty">
-        <span class="feed-empty-icon">◈</span>
-        <p>Pronto para ouvir você.</p>
+        <p class="welcome-title">Jarvis</p>
+        <p class="welcome-sub">Assistente pessoal local</p>
       </div>
     </main>
 
-    <footer class="toolbar">
-      <div class="input-row">
+    <div id="typing" class="typing" hidden>
+      <div class="typing-bubble">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+
+    <footer class="input-area">
+      <div class="input-wrapper">
         <input
-          id="command-input"
           type="text"
+          id="input"
+          placeholder="Digite um comando..."
           autocomplete="off"
           autocorrect="off"
           spellcheck="false"
-          placeholder="Digite um comando…"
           enterkeyhint="send"
         >
-        <button class="btn-send" id="send-button" type="button" aria-label="Enviar">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        <button id="send" class="icon-btn primary" aria-label="Enviar" title="Enviar">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+        <button id="mic" class="icon-btn" aria-label="Microfone" title="Microfone">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
         </button>
       </div>
-      <button class="btn-voice" id="voice-button" type="button" aria-label="Comando de voz">
-        <span class="voice-ring"></span>
-        <svg class="voice-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-          <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-          <line x1="12" y1="19" x2="12" y2="23"/>
-          <line x1="8" y1="23" x2="16" y2="23"/>
-        </svg>
-      </button>
+      <p class="hint" id="mic-hint" hidden>Toque no microfone e fale</p>
     </footer>
+  </div>
 
-    <script type="module" src="/app.js"></script>
-  </body>
+  <div id="config-modal" class="modal" hidden>
+    <div class="modal-backdrop"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Configurações</h2>
+        <button id="close-config" class="icon-btn" aria-label="Fechar">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <label class="field">
+          <span>Token de API (X-Jarvis-Token)</span>
+          <input type="password" id="token-input" placeholder="Cole o token aqui...">
+        </label>
+        <p class="field-hint">Deixe em branco se o servidor não exigir token.</p>
+        <div class="modal-actions">
+          <button id="save-token" class="btn-primary">Salvar</button>
+          <button id="clear-token" class="btn-secondary">Limpar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
 </html>
