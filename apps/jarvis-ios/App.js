@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
 
-const API_BASE = 'http://IP_DO_PC:3001';
+const API_BASE = 'http://IP_DO_PC:5000';
 
 function extractReply(data) {
   if (!data || typeof data !== 'object') return null;
