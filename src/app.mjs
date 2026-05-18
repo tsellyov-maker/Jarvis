@@ -120,6 +120,10 @@ function createApp({
   });
 
   app.use(express.json({ limit: '1mb' }));
+
+  const audioDir = process.env.AUDIO_DIR || join(dirname(fileURLToPath(import.meta.url)), 'audio');
+  app.use('/audio', express.static(audioDir));
+
   app.use(express.static(webDir));
 
   app.get('/health', (req, res) => {

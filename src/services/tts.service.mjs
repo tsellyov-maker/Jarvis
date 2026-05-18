@@ -1,5 +1,17 @@
 import { logger } from '../core/logger.mjs';
 
+function normalizeAudioPath(absolutePath) {
+  if (!absolutePath) return null;
+  if (absolutePath.startsWith('/audio/')) return absolutePath;
+  const idx = absolutePath.indexOf('/audio/');
+  if (idx !== -1) return absolutePath.slice(idx);
+  const audioDir = process.env.AUDIO_DIR || '';
+  if (audioDir && absolutePath.startsWith(audioDir)) {
+    return '/audio' + absolutePath.slice(audioDir.length);
+  }
+  return absolutePath;
+}
+
 class TtsService {
   constructor({
     provider = process.env.TTS_PROVIDER || 'fish_audio',
@@ -39,7 +51,7 @@ class TtsService {
     const playback = await this.audioPlayerService.play(audioPath);
     return {
       ok: true,
-      audioPath,
+      audioPath: normalizeAudioPath(audioPath),
       played: playback.ok,
       playback,
       provider: 'fish_audio'
@@ -59,7 +71,7 @@ class TtsService {
     const playback = await this.audioPlayerService.play(audioPath);
     return {
       ok: true,
-      audioPath,
+      audioPath: normalizeAudioPath(audioPath),
       played: playback.ok,
       playback,
       provider: this.localTtsService.provider,
